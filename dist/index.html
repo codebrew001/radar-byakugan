@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Radar meteorológico em tempo quase real para o Rio de Janeiro, com foco no Radar do Sumaré do Sistema Alerta Rio."
+    />
+    <title>Radar Byakugan — chuva no Rio em movimento</title>
+    <link rel="preconnect" href="https://unpkg.com" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIINfQ3p7M5jJc0V8Zc1w2w2Pp9dY7b1J4k="
+      crossorigin=""
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/maplibre-gl@6.3.0/dist/maplibre-gl.css"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="Radar Byakugan, início">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 44 44" role="img">
+              <circle cx="22" cy="22" r="16" fill="none" stroke="currentColor" stroke-width="2" />
+              <circle cx="22" cy="22" r="8" fill="none" stroke="currentColor" stroke-width="2" opacity="0.72" />
+              <circle cx="22" cy="22" r="3" fill="currentColor" />
+              <path d="M22 3v7M22 34v7M3 22h7M34 22h7" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </span>
+          <span>
+            <strong>Radar Byakugan</strong>
+            <small>olhos sobre a chuva</small>
+          </span>
+        </a>
+
+        <div class="topbar-status" aria-live="polite">
+          <span class="status-dot is-live" id="topStatusDot"></span>
+          <span id="topStatusText">Monitorando Rio de Janeiro</span>
+        </div>
+
+        <button class="icon-button" id="refreshButton" type="button" aria-label="Atualizar dados do radar" title="Atualizar dados">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20 11a8.1 8.1 0 0 0-14.8-3.8L3 10m0 0V5m0 5h5M4 13a8.1 8.1 0 0 0 14.8 3.8L21 14m0 0v5m0-5h-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+      </header>
+
+      <main>
+        <section class="intro-grid" aria-labelledby="page-title">
+          <div class="intro-copy">
+            <div class="eyebrow"><span class="eyebrow-line"></span> RADAR AO VIVO · RIO DE JANEIRO</div>
+            <h1 id="page-title">Chuva sobre o Rio,<br /><em>em movimento.</em></h1>
+            <p class="intro-lede">
+              Acompanhe a precipitação recente sobre a cidade com o Radar do Sumaré como estação de referência do Sistema Alerta Rio.
+            </p>
+
+            <div class="metrics-row">
+              <div class="metric">
+                <span>Status da fonte</span>
+                <strong><span class="status-dot is-live"></span><span id="sourceStatus">Conectando</span></strong>
+              </div>
+              <div class="metric">
+                <span>Última leitura</span>
+                <strong id="latestReading">--:--</strong>
+              </div>
+              <div class="metric">
+                <span>Janela exibida</span>
+                <strong>2 horas</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="intro-note">
+            <span class="note-kicker">EM FOCO</span>
+            <div class="note-location">
+              <span class="location-pulse"></span>
+              <div>
+                <strong>Radar do Sumaré</strong>
+                <span>Alerta Rio · estação BRSE</span>
+              </div>
+            </div>
+            <p>Uma leitura limpa para decidir se vale esperar a chuva passar ou seguir caminho.</p>
+            <a href="https://www.sistema-alerta-rio.com.br/radar-sumare/informacoes/" target="_blank" rel="noreferrer">Conheça o radar <span aria-hidden="true">↗</span></a>
+          </div>
+        </section>
+
+        <section class="map-section" aria-label="Mapa meteorológico do Rio de Janeiro">
+          <div class="map-card">
+            <div id="map" role="application" aria-label="Mapa do Rio de Janeiro com camada de radar meteorológico"></div>
+
+            <div class="map-header-overlay">
+              <div class="map-source-pill">
+                <span class="source-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /><path d="M12 7v5l3.5 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /><path d="M17.5 3.5h3v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                </span>
+                <span><strong>Alerta Rio</strong><small>Radar do Sumaré · BRSE</small></span>
+              </div>
+              <button class="map-control-button" id="recenterButton" type="button" aria-label="Centralizar no Rio de Janeiro" title="Centralizar no Rio">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v3m0 12v3M3 12h3m12 0h3M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
+              </button>
+            </div>
+
+            <div class="map-footer-overlay">
+              <div class="map-legend">
+                <span class="legend-title">INTENSIDADE</span>
+                <div class="legend-scale" aria-label="Escala de intensidade da chuva">
+                  <span><i class="rain-color rain-1"></i><small>fraca</small></span>
+                  <span><i class="rain-color rain-2"></i><small>moderada</small></span>
+                  <span><i class="rain-color rain-3"></i><small>forte</small></span>
+                  <span><i class="rain-color rain-4"></i><small>muito forte</small></span>
+                </div>
+              </div>
+              <div class="coverage-note"><span class="coverage-ring"></span> alcance aprox. 250 km</div>
+            </div>
+
+            <div class="map-loading" id="mapLoading">
+              <span class="loader"></span>
+              <span>Buscando os últimos frames…</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="timeline-card" aria-label="Controle de histórico do radar">
+          <div class="timeline-heading">
+            <div>
+              <span class="section-label">HISTÓRICO RECENTE</span>
+              <h2 id="frameTitle">Carregando frames</h2>
+            </div>
+            <div class="timeline-actions">
+              <span class="frame-count" id="frameCount">0 / 0</span>
+              <button class="play-button" id="playButton" type="button" aria-label="Reproduzir animação do radar" title="Reproduzir">
+                <svg id="playIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 9 6-9 6V6Z" fill="currentColor" /></svg>
+                <span id="playLabel">Animar</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="timeline-control">
+            <input id="timelineSlider" type="range" min="0" max="0" value="0" step="1" aria-label="Selecionar frame do radar" disabled />
+            <div class="timeline-ticks" id="timelineTicks"></div>
+          </div>
+          <div class="timeline-meta">
+            <span id="frameTime">--:--</span>
+            <span>agora</span>
+          </div>
+        </section>
+
+        <section class="detail-grid" aria-label="Detalhes do monitoramento">
+          <article class="detail-card detail-card-accent">
+            <span class="section-label">RADAR EM FOCO</span>
+            <div class="detail-title-row"><h2>Sumaré</h2><span class="station-code">BRSE</span></div>
+            <p>Serra da Carioca · Parque Nacional da Tijuca</p>
+            <div class="detail-data"><span>−22,9544° S</span><span>−43,2478° O</span></div>
+          </article>
+          <article class="detail-card">
+            <span class="section-label">COMO LER</span>
+            <h2>Observe o deslocamento</h2>
+            <p>O radar mostra precipitação detectada recentemente. Use o histórico para perceber direção e intensidade da chuva.</p>
+            <a href="https://www.rainviewer.com/api/weather-maps-api.html" target="_blank" rel="noreferrer">Documentação da camada <span aria-hidden="true">↗</span></a>
+          </article>
+          <article class="detail-card">
+            <span class="section-label">PRÓXIMO PASSO</span>
+            <h2>Mais sinais, no mesmo mapa</h2>
+            <p>O MVP já deixa a base pronta para estações, pluviômetros e alertas por bairro.</p>
+            <span class="coming-soon"><span></span> Em construção</span>
+          </article>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <span>Dados de radar por <a href="https://www.rainviewer.com/" target="_blank" rel="noreferrer">RainViewer</a> · fonte de referência <a href="https://www.sistema-alerta-rio.com.br/" target="_blank" rel="noreferrer">Sistema Alerta Rio</a></span>
+        <span class="footer-right">Atualização automática a cada 5 min · <span id="footerClock">--:--</span></span>
+      </footer>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script src="https://unpkg.com/maplibre-gl@5.0.0/dist/maplibre-gl.js"></script>
+    <script src="https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.1.3/leaflet-maplibre-gl.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
