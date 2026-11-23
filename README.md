@@ -1,6 +1,6 @@
 # Radar Byakugan
 
-MVP estático de um painel de chuva para o Rio de Janeiro, com foco no Radar do Sumaré (Alerta Rio) e camada de radar do RainViewer.
+MVP estático de um painel de chuva para o Brasil, com dados compostos de múltiplos radares do RainViewer.
 
 ## Escolha técnica
 
@@ -27,11 +27,11 @@ Depois abra `http://localhost:8080`.
 
 ## Nota sobre a fonte do radar
 
-O catálogo do RainViewer identifica o Radar do Sumaré como `BRSE` e lista o Alerta Rio entre as fontes brasileiras. A API pública de Weather Maps entrega tiles compostos de radar; neste MVP o mapa é centralizado no Sumaré, mostra o marcador/alcance da estação e usa os frames atuais da API. Uma próxima evolução pode adicionar um proxy para normalizar o arquivo bruto da estação e separar a camada exclusivamente do Sumaré quando esse fluxo estiver disponível.
+A API pública de Weather Maps do RainViewer entrega tiles compostos de radar. Neste MVP, o mapa inicia centralizado no Rio de Janeiro, permite navegar pelas 27 capitais brasileiras e usa os frames mais recentes disponíveis para o mosaico nacional. A camada não representa exclusivamente uma estação individual.
 
 ## Próximas evoluções
 
-1. Filtro por bairros e favoritos.
-2. Estações pluviométricas do Alerta Rio.
+1. Filtros por região, bairros e favoritos.
+2. Estações pluviométricas e dados observados.
 3. Alertas de chuva por localização.
 4. PWA com cache e modo de conectividade limitada.

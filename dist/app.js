@@ -1,19 +1,41 @@
 const CONFIG = {
   mapCenter: [-22.9068, -43.1729],
   mapZoom: 9,
-  radar: {
-    name: 'Alerta Rio',
-    station: 'Radar do Sumaré',
-    id: 'BRSE',
-    coordinates: [-22.9544, -43.2478],
-    coverageKm: 250,
-    sourceUrl: 'https://www.sistema-alerta-rio.com.br/radar-sumare/informacoes/',
-  },
   apiUrl: 'https://api.rainviewer.com/public/weather-maps.json',
   palette: 2,
   options: '1_0',
   refreshMs: 5 * 60 * 1000,
 };
+
+const CAPITALS = [
+  { code: 'SE', name: 'Aracaju', coordinates: [-10.9472, -37.0731] },
+  { code: 'PA', name: 'Belém', coordinates: [-1.4558, -48.4902] },
+  { code: 'MG', name: 'Belo Horizonte', coordinates: [-19.9167, -43.9345] },
+  { code: 'RR', name: 'Boa Vista', coordinates: [2.8235, -60.6758] },
+  { code: 'DF', name: 'Brasília', coordinates: [-15.7939, -47.8828] },
+  { code: 'MS', name: 'Campo Grande', coordinates: [-20.4697, -54.6201] },
+  { code: 'MT', name: 'Cuiabá', coordinates: [-15.6014, -56.0979] },
+  { code: 'PR', name: 'Curitiba', coordinates: [-25.4284, -49.2733] },
+  { code: 'SC', name: 'Florianópolis', coordinates: [-27.5954, -48.548] },
+  { code: 'CE', name: 'Fortaleza', coordinates: [-3.7319, -38.5267] },
+  { code: 'GO', name: 'Goiânia', coordinates: [-16.6869, -49.2648] },
+  { code: 'PB', name: 'João Pessoa', coordinates: [-7.1195, -34.845] },
+  { code: 'AP', name: 'Macapá', coordinates: [0.0356, -51.0705] },
+  { code: 'AL', name: 'Maceió', coordinates: [-9.6658, -35.7353] },
+  { code: 'AM', name: 'Manaus', coordinates: [-3.119, -60.0217] },
+  { code: 'RN', name: 'Natal', coordinates: [-5.7945, -35.211] },
+  { code: 'TO', name: 'Palmas', coordinates: [-10.184, -48.3336] },
+  { code: 'RS', name: 'Porto Alegre', coordinates: [-30.0346, -51.2177] },
+  { code: 'RO', name: 'Porto Velho', coordinates: [-8.7612, -63.9004] },
+  { code: 'PE', name: 'Recife', coordinates: [-8.0476, -34.877] },
+  { code: 'AC', name: 'Rio Branco', coordinates: [-9.9754, -67.8249] },
+  { code: 'RJ', name: 'Rio de Janeiro', coordinates: CONFIG.mapCenter },
+  { code: 'BA', name: 'Salvador', coordinates: [-12.9777, -38.5016] },
+  { code: 'MA', name: 'São Luís', coordinates: [-2.5307, -44.3068] },
+  { code: 'SP', name: 'São Paulo', coordinates: [-23.5505, -46.6333] },
+  { code: 'PI', name: 'Teresina', coordinates: [-5.0919, -42.8034] },
+  { code: 'ES', name: 'Vitória', coordinates: [-20.3155, -40.3128] },
+];
 
 const state = {
   api: null,
@@ -28,6 +50,10 @@ const els = {
   mapLoading: document.querySelector('#mapLoading'),
   refreshButton: document.querySelector('#refreshButton'),
   recenterButton: document.querySelector('#recenterButton'),
+  capitalPicker: document.querySelector('#capitalPicker'),
+  capitalSelect: document.querySelector('#capitalSelect'),
+  capitalSelectedLabel: document.querySelector('#capitalSelectedLabel'),
+  capitalOptions: document.querySelector('#capitalOptions'),
   playButton: document.querySelector('#playButton'),
   playIcon: document.querySelector('#playIcon'),
   playLabel: document.querySelector('#playLabel'),
@@ -54,38 +80,95 @@ const map = L.map('map', {
 });
 
 const maplibreLayer = L.maplibreGL({
-  style: 'https://tiles.openfreemap.org/styles/bright',
+  style: 'https://tiles.openfreemap.org/styles/dark',
 }).addTo(map);
 const maplibreMap = maplibreLayer.getMaplibreMap();
 
 const RADAR_SOURCE_ID = 'rainviewer-radar-source';
 const RADAR_LAYER_ID = 'rainviewer-radar-layer';
 
-const radarMarker = L.marker(CONFIG.radar.coordinates, {
-  icon: L.divIcon({
-    className: 'radar-marker-wrapper',
-    html: '<span class="radar-marker"><span></span></span>',
-    iconSize: [24, 24],
-    iconAnchor: [12, 12],
-  }),
-  title: CONFIG.radar.station,
-}).addTo(map);
+const setCapitalMenuOpen = (isOpen) => {
+  els.capitalPicker.classList.toggle('is-open', isOpen);
+  els.capitalSelect.setAttribute('aria-expanded', String(isOpen));
 
-radarMarker.bindPopup(`
-  <strong>${CONFIG.radar.station}</strong><br>
-  <span style="color:#66807a">${CONFIG.radar.name} · ${CONFIG.radar.id}</span>
-`);
+  const selectedOption = els.capitalOptions.querySelector('.capital-option.is-selected');
+  els.capitalOptions.querySelectorAll('.capital-option').forEach((option) => {
+    option.tabIndex = isOpen && option === selectedOption ? 0 : -1;
+  });
 
-L.circle(CONFIG.radar.coordinates, {
-  radius: CONFIG.radar.coverageKm * 1000,
-  color: '#61d7c8',
-  weight: 1,
-  opacity: 0.32,
-  fillColor: '#61d7c8',
-  fillOpacity: 0.025,
-  dashArray: '6 9',
-  interactive: false,
-}).addTo(map);
+  if (isOpen) selectedOption?.focus();
+};
+
+const selectCapital = (capital, { moveMap = false } = {}) => {
+  els.capitalSelectedLabel.textContent = `${capital.name} · ${capital.code}`;
+  els.capitalSelect.setAttribute('aria-label', `Capital selecionada: ${capital.name}`);
+  els.capitalOptions.querySelectorAll('.capital-option').forEach((option) => {
+    const isSelected = option.dataset.code === capital.code;
+    option.classList.toggle('is-selected', isSelected);
+    option.setAttribute('aria-selected', String(isSelected));
+  });
+
+  if (moveMap) {
+    map.flyTo(capital.coordinates, map.getZoom(), { duration: 0.8 });
+    showToast(`Mapa centralizado em ${capital.name}`);
+  }
+};
+
+const focusCapitalOption = (currentOption, direction) => {
+  const options = [...els.capitalOptions.querySelectorAll('.capital-option')];
+  const currentIndex = options.indexOf(currentOption);
+  const nextIndex = Math.max(0, Math.min(options.length - 1, currentIndex + direction));
+  options[nextIndex]?.focus();
+};
+
+CAPITALS.forEach((capital) => {
+  const option = document.createElement('button');
+  option.type = 'button';
+  option.className = 'capital-option';
+  option.dataset.code = capital.code;
+  option.setAttribute('role', 'option');
+  option.setAttribute('aria-selected', 'false');
+  option.tabIndex = -1;
+  option.innerHTML = `<span>${capital.name}</span><small>${capital.code}</small>`;
+  option.addEventListener('click', () => {
+    selectCapital(capital, { moveMap: true });
+    setCapitalMenuOpen(false);
+    els.capitalSelect.focus();
+  });
+  option.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+      event.preventDefault();
+      focusCapitalOption(option, 1);
+    } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+      event.preventDefault();
+      focusCapitalOption(option, -1);
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      setCapitalMenuOpen(false);
+      els.capitalSelect.focus();
+    } else if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      option.click();
+    }
+  });
+  els.capitalOptions.appendChild(option);
+});
+
+selectCapital(CAPITALS.find(({ code }) => code === 'RJ'));
+els.capitalSelect.addEventListener('click', () => {
+  setCapitalMenuOpen(!els.capitalPicker.classList.contains('is-open'));
+});
+els.capitalSelect.addEventListener('keydown', (event) => {
+  if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    setCapitalMenuOpen(true);
+  } else if (event.key === 'Escape') {
+    setCapitalMenuOpen(false);
+  }
+});
+document.addEventListener('click', (event) => {
+  if (!els.capitalPicker.contains(event.target)) setCapitalMenuOpen(false);
+});
 
 const formatTime = (unixSeconds, options = {}) => new Intl.DateTimeFormat('pt-BR', {
   timeZone: 'America/Sao_Paulo',
@@ -257,7 +340,7 @@ const loadRadar = async ({ manual = false } = {}) => {
     renderFrame(frames.length - 1);
     const latest = frames[frames.length - 1].time;
     els.latestReading.textContent = formatTime(latest);
-    setStatus('live', 'Monitorando Rio de Janeiro');
+    setStatus('live', 'Monitorando Brasil');
     if (manual) showToast('Radar atualizado com sucesso');
   } catch (error) {
     console.error(error);

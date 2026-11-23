@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Radar meteorológico em tempo quase real para o Rio de Janeiro, com foco no Radar do Sumaré do Sistema Alerta Rio."
+      content="Radar meteorológico em tempo quase real para o Brasil, com dados compostos de múltiplos radares via RainViewer."
     />
-    <title>Radar Byakugan — chuva no Rio em movimento</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <title>Radar Byakugan — chuva no Brasil em movimento</title>
     <link rel="preconnect" href="https://unpkg.com" />
     <link
       rel="stylesheet"
@@ -41,7 +42,7 @@
 
         <div class="topbar-status" aria-live="polite">
           <span class="status-dot is-live" id="topStatusDot"></span>
-          <span id="topStatusText">Monitorando Rio de Janeiro</span>
+          <span id="topStatusText">Monitorando Brasil</span>
         </div>
 
         <button class="icon-button" id="refreshButton" type="button" aria-label="Atualizar dados do radar" title="Atualizar dados">
@@ -54,10 +55,10 @@
       <main>
         <section class="intro-grid" aria-labelledby="page-title">
           <div class="intro-copy">
-            <div class="eyebrow"><span class="eyebrow-line"></span> RADAR AO VIVO · RIO DE JANEIRO</div>
-            <h1 id="page-title">Chuva sobre o Rio,<br /><em>em movimento.</em></h1>
+            <div class="eyebrow"><span class="eyebrow-line"></span> RADAR AO VIVO · BRASIL</div>
+            <h1 id="page-title">Chuva no Brasil,<br /><em>em movimento.</em></h1>
             <p class="intro-lede">
-              Acompanhe a precipitação recente sobre a cidade com o Radar do Sumaré como estação de referência do Sistema Alerta Rio.
+              Acompanhe a precipitação recente sobre o país com dados compostos de múltiplos radares meteorológicos.
             </p>
 
             <div class="metrics-row">
@@ -81,29 +82,39 @@
             <div class="note-location">
               <span class="location-pulse"></span>
               <div>
-                <strong>Radar do Sumaré</strong>
-                <span>Alerta Rio · estação BRSE</span>
+                <strong>Múltiplos radares</strong>
+                <span>Mosaico RainViewer · Brasil</span>
               </div>
             </div>
-            <p>Uma leitura limpa para decidir se vale esperar a chuva passar ou seguir caminho.</p>
-            <a href="https://www.sistema-alerta-rio.com.br/radar-sumare/informacoes/" target="_blank" rel="noreferrer">Conheça o radar <span aria-hidden="true">↗</span></a>
+            <p>Uma visão nacional para acompanhar a movimentação da chuva e navegar pelas capitais.</p>
+            <a href="https://www.rainviewer.com/br/radars/brazil.html" target="_blank" rel="noreferrer">Ver radares do Brasil <span aria-hidden="true">↗</span></a>
           </div>
         </section>
 
-        <section class="map-section" aria-label="Mapa meteorológico do Rio de Janeiro">
+        <section class="map-section" aria-label="Mapa meteorológico do Brasil">
           <div class="map-card">
-            <div id="map" role="application" aria-label="Mapa do Rio de Janeiro com camada de radar meteorológico"></div>
+            <div id="map" role="application" aria-label="Mapa do Brasil com camada de múltiplos radares meteorológicos"></div>
 
             <div class="map-header-overlay">
               <div class="map-source-pill">
                 <span class="source-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /><path d="M12 7v5l3.5 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /><path d="M17.5 3.5h3v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
                 </span>
-                <span><strong>Alerta Rio</strong><small>Radar do Sumaré · BRSE</small></span>
+                <span><strong>Múltiplos radares</strong><small>Mosaico RainViewer · Brasil</small></span>
               </div>
-              <button class="map-control-button" id="recenterButton" type="button" aria-label="Centralizar no Rio de Janeiro" title="Centralizar no Rio">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v3m0 12v3M3 12h3m12 0h3M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
-              </button>
+              <div class="map-header-tools">
+                <div class="capital-picker" id="capitalPicker">
+                  <span>IR PARA CAPITAL</span>
+                  <button class="capital-combobox" id="capitalSelect" type="button" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-controls="capitalOptions" aria-label="Selecionar capital do Brasil">
+                    <span id="capitalSelectedLabel">Rio de Janeiro · RJ</span>
+                    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                  </button>
+                  <div class="capital-options" id="capitalOptions" role="listbox" aria-label="Capitais do Brasil"></div>
+                </div>
+                <button class="map-control-button" id="recenterButton" type="button" aria-label="Centralizar na posição inicial" title="Voltar para a posição inicial">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v3m0 12v3M3 12h3m12 0h3M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
+                </button>
+              </div>
             </div>
 
             <div class="map-footer-overlay">
@@ -116,7 +127,7 @@
                   <span><i class="rain-color rain-4"></i><small>muito forte</small></span>
                 </div>
               </div>
-              <div class="coverage-note"><span class="coverage-ring"></span> alcance aprox. 250 km</div>
+              <div class="coverage-note"><span class="coverage-ring"></span> cobertura nacional disponível</div>
             </div>
 
             <div class="map-loading" id="mapLoading">
@@ -153,10 +164,10 @@
 
         <section class="detail-grid" aria-label="Detalhes do monitoramento">
           <article class="detail-card detail-card-accent">
-            <span class="section-label">RADAR EM FOCO</span>
-            <div class="detail-title-row"><h2>Sumaré</h2><span class="station-code">BRSE</span></div>
-            <p>Serra da Carioca · Parque Nacional da Tijuca</p>
-            <div class="detail-data"><span>−22,9544° S</span><span>−43,2478° O</span></div>
+            <span class="section-label">COBERTURA NACIONAL</span>
+            <div class="detail-title-row"><h2>Brasil</h2><span class="station-code">RAINVIEWER</span></div>
+            <p>Mosaico de múltiplos radares meteorológicos</p>
+            <div class="detail-data"><span>27 capitais</span><span>cobertura nacional</span></div>
           </article>
           <article class="detail-card">
             <span class="section-label">COMO LER</span>
@@ -167,14 +178,14 @@
           <article class="detail-card">
             <span class="section-label">PRÓXIMO PASSO</span>
             <h2>Mais sinais, no mesmo mapa</h2>
-            <p>O MVP já deixa a base pronta para estações, pluviômetros e alertas por bairro.</p>
+            <p>O MVP já deixa a base pronta para estações, pluviômetros e alertas por localização.</p>
             <span class="coming-soon"><span></span> Em construção</span>
           </article>
         </section>
       </main>
 
       <footer class="footer">
-        <span>Dados de radar por <a href="https://www.rainviewer.com/" target="_blank" rel="noreferrer">RainViewer</a> · fonte de referência <a href="https://www.sistema-alerta-rio.com.br/" target="_blank" rel="noreferrer">Sistema Alerta Rio</a></span>
+        <span>Dados de radar por <a href="https://www.rainviewer.com/" target="_blank" rel="noreferrer">RainViewer</a> · mosaico de múltiplos radares</span>
         <span class="footer-right">Atualização automática a cada 5 min · <span id="footerClock">--:--</span></span>
       </footer>
     </div>

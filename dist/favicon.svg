@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 44" role="img" aria-labelledby="title desc">
+  <title id="title">Radar Byakugan</title>
+  <desc id="desc">Ícone circular de radar meteorológico</desc>
+  <rect width="44" height="44" rx="11" fill="#071110"/>
+  <circle cx="22" cy="22" r="16" fill="none" stroke="#b8e65d" stroke-width="2"/>
+  <circle cx="22" cy="22" r="8" fill="none" stroke="#61d7c8" stroke-width="2" opacity=".85"/>
+  <circle cx="22" cy="22" r="3" fill="#b8e65d"/>
+  <path d="M22 3v7M22 34v7M3 22h7M34 22h7" fill="none" stroke="#b8e65d" stroke-width="2" stroke-linecap="round"/>
+</svg>
