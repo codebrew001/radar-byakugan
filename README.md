@@ -29,9 +29,15 @@ Depois abra `http://localhost:8080`.
 
 A API pública de Weather Maps do RainViewer entrega tiles compostos de radar. Neste MVP, o mapa inicia centralizado no Rio de Janeiro, permite navegar pelas 27 capitais brasileiras e usa os frames mais recentes disponíveis para o mosaico nacional. A camada não representa exclusivamente uma estação individual.
 
+## Alertas por localização
+
+O navegador pode monitorar a capital selecionada ou a localização atual autorizada pelo usuário. A aplicação analisa o último tile do radar ao redor do ponto para indicar chuva detectada e consulta os avisos ativos do INMET quando o endpoint permite acesso direto. Esses sinais são exibidos no mapa e no cartão de alertas; notificações usam a API do navegador enquanto a página estiver aberta e o usuário tiver concedido permissão.
+
+GitHub Pages não executa rotinas em segundo plano nem envia push por conta própria. Para notificações com a página fechada, será necessário adicionar futuramente um serviço externo de backend/cron e Web Push.
+
 ## Próximas evoluções
 
 1. Filtros por região, bairros e favoritos.
 2. Estações pluviométricas e dados observados.
-3. Alertas de chuva por localização.
+3. Backend/cron para Web Push com a página fechada.
 4. PWA com cache e modo de conectividade limitada.

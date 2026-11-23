@@ -137,6 +137,45 @@
           </div>
         </section>
 
+        <section class="alerts-card" aria-labelledby="alertsTitle">
+          <div class="alerts-heading">
+            <div>
+              <span class="section-label">ALERTAS POR LOCALIZAÇÃO</span>
+              <h2 id="alertsTitle">Rio de Janeiro</h2>
+              <p id="alertsSubtitle">Monitorando chuva detectada e avisos oficiais nesta localização.</p>
+            </div>
+            <div class="alerts-actions">
+              <button class="secondary-button" id="locationButton" type="button" aria-label="Usar minha localização atual">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-12a7 7 0 1 0-14 0c0 5.9 7 12 7 12Z" fill="none" stroke="currentColor" stroke-width="1.7" /><circle cx="12" cy="9" r="2.3" fill="none" stroke="currentColor" stroke-width="1.7" /></svg>
+                <span>Minha localização</span>
+              </button>
+              <button class="secondary-button" id="notificationButton" type="button" aria-label="Ativar notificações de alertas">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                <span>Ativar notificações</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="alert-status-grid">
+            <article class="alert-status alert-status-radar" id="radarAlertStatus" aria-live="polite">
+              <div class="alert-status-top"><span class="alert-status-icon" aria-hidden="true">◌</span><span class="alert-kicker">RADAR AGORA</span></div>
+              <strong id="radarAlertTitle">Verificando chuva próxima</strong>
+              <p id="radarAlertText">Aguardando o último frame do radar para analisar esta localização.</p>
+            </article>
+            <article class="alert-status alert-status-official" id="officialAlertStatus" aria-live="polite">
+              <div class="alert-status-top"><span class="alert-status-icon" aria-hidden="true">!</span><span class="alert-kicker">AVISOS OFICIAIS</span></div>
+              <strong id="officialAlertTitle">Consultando o INMET</strong>
+              <p id="officialAlertText">Buscando avisos meteorológicos ativos e futuros.</p>
+            </article>
+          </div>
+
+          <div class="official-alerts-list" id="officialAlertsList"></div>
+          <div class="alerts-footer">
+            <span id="alertsUpdated">Atualização automática a cada 5 min</span>
+            <a href="https://avisos.inmet.gov.br/" target="_blank" rel="noreferrer">Avisos oficiais do INMET <span aria-hidden="true">↗</span></a>
+          </div>
+        </section>
+
         <section class="timeline-card" aria-label="Controle de histórico do radar">
           <div class="timeline-heading">
             <div>
@@ -187,6 +226,7 @@
       <footer class="footer">
         <span>Dados de radar por <a href="https://www.rainviewer.com/" target="_blank" rel="noreferrer">RainViewer</a> · mosaico de múltiplos radares</span>
         <span class="footer-right">Atualização automática a cada 5 min · <span id="footerClock">--:--</span></span>
+        <span class="footer-credit">Radar Byakugan · Leandro Medeiros</span>
       </footer>
     </div>
 
