@@ -137,6 +137,31 @@
           </div>
         </section>
 
+        <section class="timeline-card" aria-label="Controle de histórico do radar">
+          <div class="timeline-heading">
+            <div>
+              <span class="section-label">HISTÓRICO RECENTE</span>
+              <h2 id="frameTitle">Carregando frames</h2>
+            </div>
+            <div class="timeline-actions">
+              <span class="frame-count" id="frameCount">0 / 0</span>
+              <button class="play-button" id="playButton" type="button" aria-label="Reproduzir animação do radar" title="Reproduzir">
+                <svg id="playIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 9 6-9 6V6Z" fill="currentColor" /></svg>
+                <span id="playLabel">Animar</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="timeline-control">
+            <input id="timelineSlider" type="range" min="0" max="0" value="0" step="1" aria-label="Selecionar frame do radar" disabled />
+            <div class="timeline-ticks" id="timelineTicks"></div>
+          </div>
+          <div class="timeline-meta">
+            <span id="frameTime">--:--</span>
+            <span>agora</span>
+          </div>
+        </section>
+
         <section class="alerts-card" aria-labelledby="alertsTitle">
           <div class="alerts-heading">
             <div>
@@ -176,31 +201,6 @@
           </div>
         </section>
 
-        <section class="timeline-card" aria-label="Controle de histórico do radar">
-          <div class="timeline-heading">
-            <div>
-              <span class="section-label">HISTÓRICO RECENTE</span>
-              <h2 id="frameTitle">Carregando frames</h2>
-            </div>
-            <div class="timeline-actions">
-              <span class="frame-count" id="frameCount">0 / 0</span>
-              <button class="play-button" id="playButton" type="button" aria-label="Reproduzir animação do radar" title="Reproduzir">
-                <svg id="playIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 9 6-9 6V6Z" fill="currentColor" /></svg>
-                <span id="playLabel">Animar</span>
-              </button>
-            </div>
-          </div>
-
-          <div class="timeline-control">
-            <input id="timelineSlider" type="range" min="0" max="0" value="0" step="1" aria-label="Selecionar frame do radar" disabled />
-            <div class="timeline-ticks" id="timelineTicks"></div>
-          </div>
-          <div class="timeline-meta">
-            <span id="frameTime">--:--</span>
-            <span>agora</span>
-          </div>
-        </section>
-
         <section class="detail-grid" aria-label="Detalhes do monitoramento">
           <article class="detail-card detail-card-accent">
             <span class="section-label">COBERTURA NACIONAL</span>
@@ -213,12 +213,6 @@
             <h2>Observe o deslocamento</h2>
             <p>O radar mostra precipitação detectada recentemente. Use o histórico para perceber direção e intensidade da chuva.</p>
             <a href="https://www.rainviewer.com/api/weather-maps-api.html" target="_blank" rel="noreferrer">Documentação da camada <span aria-hidden="true">↗</span></a>
-          </article>
-          <article class="detail-card">
-            <span class="section-label">PRÓXIMO PASSO</span>
-            <h2>Mais sinais, no mesmo mapa</h2>
-            <p>O MVP já deixa a base pronta para estações, pluviômetros e alertas por localização.</p>
-            <span class="coming-soon"><span></span> Em construção</span>
           </article>
         </section>
       </main>
