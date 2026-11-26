@@ -711,7 +711,25 @@ const syncRadarLayer = (frame) => {
   state.radarReady = true;
 };
 
+const enhanceMapLabelContrast = () => {
+  const textLayers = maplibreMap.getStyle()?.layers?.filter((layer) => (
+    layer.type === 'symbol' && layer.layout?.['text-field']
+  )) || [];
+
+  textLayers.forEach((layer) => {
+    try {
+      maplibreMap.setPaintProperty(layer.id, 'text-color', '#f4faf7');
+      maplibreMap.setPaintProperty(layer.id, 'text-halo-color', '#071110');
+      maplibreMap.setPaintProperty(layer.id, 'text-halo-width', 1.8);
+      maplibreMap.setPaintProperty(layer.id, 'text-halo-blur', 0.25);
+    } catch (error) {
+      console.warn(`Não foi possível reforçar o contraste da label ${layer.id}`, error);
+    }
+  });
+};
+
 maplibreMap.once('load', () => {
+  enhanceMapLabelContrast();
   if (state.activeIndex >= 0) syncRadarLayer(state.frames[state.activeIndex]);
 });
 
